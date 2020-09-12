@@ -1,0 +1,38 @@
+version: '3.6'
+
+services:
+  kpopwayServer:
+    image: gianpietro/kpopway:latest
+    restart: on-failure
+    environment:
+      # NGINX-PROXY ENVIRONMENT VARIABLES: UPDATE ME
+      - VIRTUAL_HOST=kpopway.magiqapps.com
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=kpopway.magiqapps.com
+      - LETSENCRYPT_EMAIL=info@magiqapps.com
+      # END NGINX-PROXY ENVIRONMENT VARIABLES
+    expose:
+      - 80     
+    links:
+      - mongo_kpopway
+
+  mongo_kpopway:
+    image: "mongo"
+    container_name: "mongo_kpopway"
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE=kpopway
+      - MONGO_INITDB_ROOT_USERNAME=gianpietro
+      - MONGO_INITDB_ROOT_PASSWORD=magiqApps2020smlvServer
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
+    ports:
+      - '27021:27017'
+    expose:
+      - 27021
+
+networks:
+  default:
+    external:
+      name: nginx-proxy
