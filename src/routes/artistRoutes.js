@@ -16,18 +16,15 @@ router.get("/artists", async (req, res) => {
 });
 
 router.post("/artists", async (req, res) => {
+  console.log("posting", req.body);
   const { name } = req.body;
   if (!name) {
     return res.status(422).send({ error: "You must provide a name" });
   }
 
-  try {
-    const artist = new Artist(req.body);
-    await artist.save();
-    res.send(artist);
-  } catch (err) {
-    res.status(422).send({ error: err.message });
-  }
+  const artist = new Artist(req.body);
+  await artist.save();
+  res.send(artist);
 });
 
 router.put("/artist/:id", async (req, res) => {
