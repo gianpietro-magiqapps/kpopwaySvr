@@ -39,10 +39,8 @@ router.post("/artists", async (req, res) => {
 
 router.put("/artist/:id/addBroadcastCredits", async (req, res) => {
   const artist = await Artist.findOne({ _id: req.params.id });
-  console.log("old Artist Credits", artist.broadcastCredits);
   artist.broadcastCredits =
     artist.broadcastCredits + parseInt(req.query.credits);
-  console.log("new Artist Credits", artist.broadcastCredits);
   await artist.save();
   res.send(artist);
 });
