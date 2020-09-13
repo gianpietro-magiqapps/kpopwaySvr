@@ -11,8 +11,15 @@ router.get("/artists", async (req, res) => {
     ? await Artist.find({ inRewards: inRewards }).sort({
         broadcastCredits: "desc",
       })
-    : await Artist.find();
+    : await Artist.find().sort({
+        name: "asc",
+      });
   res.send(artists);
+});
+
+router.get("/artist/:id", async (req, res) => {
+  const artist = await Artist.findOne({ _id: req.params.id });
+  res.send(artist);
 });
 
 router.post("/artists", async (req, res) => {
@@ -28,6 +35,16 @@ router.post("/artists", async (req, res) => {
   } catch (err) {
     res.status(422).send({ error: err.message });
   }
+});
+
+router.put("/artist/:id/addBroadcastCredit", async (req, res) => {
+  console.log("will add credits: ", req.query.credits);
+  const artist = await Artist.findOne({ _id: req.params.id });
+  console.log("old Artist Credits", artist.broadcastCredits);
+  artist.broadcastCredits = artist.broadcastCredits + req.query.credits;
+  console.log("new Artist Credits", artist.broadcastCredits);
+  await artist.save();
+  res.send(artist);
 });
 
 router.put("/artist/:id", async (req, res) => {
