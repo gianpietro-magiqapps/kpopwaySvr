@@ -16,6 +16,7 @@ app.use(uploadRoutes);
 mongoose.connect(keys.mongoURI, {
   useNewUrlParser: true,
   useCreateIndex: true,
+  useFindAndModify: false,
 });
 mongoose.connection.on("connected", () => {
   console.log("connected to MongoDB");
