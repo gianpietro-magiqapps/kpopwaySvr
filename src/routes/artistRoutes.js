@@ -38,7 +38,7 @@ router.post("/artists", async (req, res) => {
 });
 
 router.put("/artist/:id/addBroadcastCredits", async (req, res) => {
-  const artist = Artist.findOneAndUpdate(
+  const artist = await Artist.findOneAndUpdate(
     { _id: req.params.id },
     { $inc: { broadcastCredits: parseInt(req.query.credits) } }
   );
