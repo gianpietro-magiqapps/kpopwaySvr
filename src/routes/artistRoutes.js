@@ -38,10 +38,10 @@ router.post("/artists", async (req, res) => {
 });
 
 router.put("/artist/:id/addBroadcastCredits", async (req, res) => {
-  const artist = await Artist.findOne({ _id: req.params.id });
-  artist.broadcastCredits =
-    artist.broadcastCredits + parseInt(req.query.credits);
-  await artist.save();
+  Artist.findOneAndUpdate(
+    { _id: req.params.id },
+    { $inc: { broadcastCredits: parseInt(req.query.credits) } }
+  );
   res.send(artist);
 });
 
