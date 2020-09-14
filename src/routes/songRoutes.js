@@ -38,13 +38,11 @@ router.post("/songs", async (req, res) => {
 });
 
 router.put("/song/:id/addVotes", async (req, res) => {
-  const { token, votes } = req.query;
-  console.log(token, votes);
   const song = await Song.findOneAndUpdate(
     { _id: req.params.id },
     { $inc: { "rankingVotes.$[el].votes": parseInt(req.query.votes) } },
     {
-      arrayFilters: [{ "el.token": req.query.token }],
+      arrayFilters: [{ "el.userToken": req.query.userToken }],
       new: true,
     }
   );
