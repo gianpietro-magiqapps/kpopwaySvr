@@ -44,7 +44,6 @@ router.put("/song/:id/addVotes", async (req, res) => {
     {
       arrayFilters: [{ "el.userToken": req.query.userToken }],
       new: true,
-      upsert: true,
       setDefaultsOnInsert: true,
     }
   );
