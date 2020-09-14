@@ -20,7 +20,7 @@ const songSchema = new mongoose.Schema({
     default: function() {
       let votesSum = 0;
       return this.rankingVotes.map((vote) => {
-        return (votesSum += vote.votes);
+        return (votesSum += parseInt(vote.votes));
       });
     },
   },
