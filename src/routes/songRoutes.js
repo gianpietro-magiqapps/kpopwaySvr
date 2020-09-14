@@ -46,6 +46,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
       new: true,
     }
   );
+
   // update Votes
   let totalVotes = 0;
   song.rankingVotes.map((vote) => {
@@ -53,8 +54,9 @@ router.put("/song/:id/addVotes", async (req, res) => {
   });
   song.totalVotes = totalVotes;
   await song.save();
+
   // update currentPosition
-  const songs = await Song.find({ inRanking: inRanking }).sort({
+  const songs = await Song.find({ inRanking: true }).sort({
     totalVotes: "desc",
   });
   var i;
