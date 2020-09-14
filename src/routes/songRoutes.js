@@ -44,9 +44,14 @@ router.put("/song/:id/addVotes", async (req, res) => {
     {
       arrayFilters: [{ "el.userToken": req.query.userToken }],
       new: true,
-      setDefaultsOnInsert: true,
     }
   );
+  let totalVotes = 0;
+  song.rankingVotes.map((vote) => {
+    return (totalVotes += parseInt(vote.votes));
+  });
+  song.totalVotes = totalVotes;
+  await song.save();
   res.send(song);
 });
 
