@@ -46,12 +46,22 @@ router.put("/song/:id/addVotes", async (req, res) => {
       new: true,
     }
   );
+  // update Votes
   let totalVotes = 0;
   song.rankingVotes.map((vote) => {
     return (totalVotes += parseInt(vote.votes));
   });
   song.totalVotes = totalVotes;
   await song.save();
+  // update currentPosition
+  const songs = await Song.find({ inRanking: inRanking }).sort({
+    totalVotes: "desc",
+  });
+  var i;
+  for (i = 0; i < songs.length; i++) {
+    song[i].currentPosition = i + 1;
+    await song.save();
+  }
   res.send(song);
 });
 

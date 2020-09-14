@@ -14,6 +14,9 @@ const songSchema = new mongoose.Schema({
   },
   image: String,
   inRanking: Boolean,
+  weeksInRanking: Number,
+  currentPosition: Number,
+  previousPosition: Number,
   rankingVotes: [votesSchema],
   totalVotes: {
     type: Number,
