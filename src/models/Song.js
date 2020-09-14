@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const votesSchema = new mongoose.Schema({
   userToken: String,
+  lastVoted: Date,
   votes: Number,
 });
 
@@ -14,6 +15,15 @@ const songSchema = new mongoose.Schema({
   image: String,
   inRanking: Boolean,
   rankingVotes: [votesSchema],
+  totalVotes: {
+    type: Number,
+    default: function() {
+      let votesSum = 0;
+      return this.rankingVotes.map((vote) => {
+        return (votesSum += vote.votes);
+      });
+    },
+  },
 });
 
 mongoose.model("Song", songSchema);
