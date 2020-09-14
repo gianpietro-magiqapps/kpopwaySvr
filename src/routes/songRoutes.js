@@ -61,7 +61,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
   });
   var i;
   for (i = 0; i < songs.length; i++) {
-    song[i].currentPosition = i + 1;
+    songs[i].currentPosition = i + 1;
     await song.save();
   }
   res.send(song);
