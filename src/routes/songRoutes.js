@@ -72,12 +72,13 @@ router.put("/song/:id/addVotes", async (req, res) => {
     // can vote?
     // if (user.lastVoted.day !== Date.now().day) {
     if (true) {
+      console.log("user exists, can add vote");
       // can vote, add vote
       const song = await Song.findOneAndUpdate(
         { _id: req.params.id },
-        { $inc: { "rankingVotes.$[el].votes": parseInt(req.query.votes) } },
+        { $inc: { "rankingVotes.$[el].votes": parseInt(votes) } },
         {
-          arrayFilters: [{ "el.userToken": req.query.userToken }],
+          arrayFilters: [{ "el.userToken": userToken }],
           new: true,
         }
       );
@@ -87,10 +88,12 @@ router.put("/song/:id/addVotes", async (req, res) => {
       updatePositions();
       res.send(song);
     } else {
+      console.log("user exists, can't add vote");
       // can't vote
       res.status(422).send({ error: "You already voted today!" });
     }
   } else {
+    console.log("user does not exist, creating user and vote");
     // create new user
     const newUser = new User({ userToken, lastVoted: Date.now() });
     await newUser.save();

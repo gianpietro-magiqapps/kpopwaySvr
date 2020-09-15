@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const artistRoutes = require("./routes/artistRoutes");
 const songRoutes = require("./routes/songRoutes");
 const uploadRoutes = require("./routes/uploadRoutes");
+const userRoutes = require("./routes/userRoutes");
 const keys = require("./config/keys");
 
 const app = express();
@@ -15,6 +16,7 @@ app.use(bodyParser.json());
 app.use(artistRoutes);
 app.use(songRoutes);
 app.use(uploadRoutes);
+app.use(userRoutes);
 
 mongoose.connect(keys.mongoURI, {
   useNewUrlParser: true,
