@@ -66,9 +66,10 @@ router.post("/songs", async (req, res) => {
 router.put("/song/:id/addVotes", async (req, res) => {
   const { userToken, votes } = req.query;
 
-  const user = await User.find({ userToken });
+  const userCount = await User.count({ userToken });
+  console.log(userCount);
 
-  if (user) {
+  if (userCount) {
     // can vote?
     // if (user.lastVoted.day !== Date.now().day) {
     if (true) {
