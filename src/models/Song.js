@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 
 const votesSchema = new mongoose.Schema({
-  userToken: String,
-  lastVoted: Date,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
   votes: Number,
 });
 

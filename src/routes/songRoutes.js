@@ -17,6 +17,15 @@ const updatePositions = async () => {
   }
 };
 
+const updateVotes = async (song) => {
+  let totalVotes = 0;
+  song.rankingVotes.map((vote) => {
+    return (totalVotes += parseInt(vote.votes));
+  });
+  song.totalVotes = totalVotes;
+  await song.save();
+};
+
 router.get("/songs", async (req, res) => {
   const inRanking = req.query.inRanking || false;
   const songs = inRanking
@@ -54,28 +63,47 @@ router.post("/songs", async (req, res) => {
 });
 
 router.put("/song/:id/addVotes", async (req, res) => {
-  const song = await Song.findOneAndUpdate(
-    { _id: req.params.id },
-    { $inc: { "rankingVotes.$[el].votes": parseInt(req.query.votes) } },
-    {
-      arrayFilters: [{ "el.userToken": req.query.userToken }],
-      new: true,
-      upsert: true,
+  const { userToken, votes } = req.query;
+
+  const user = await User.find({ userToken });
+
+  if (user) {
+    // can vote?
+    // if (user.lastVoted.day !== Date.now().day) {
+    if (true) {
+      // can vote, add vote
+      const song = await Song.findOneAndUpdate(
+        { _id: req.params.id },
+        { $inc: { "rankingVotes.$[el].votes": parseInt(req.query.votes) } },
+        {
+          arrayFilters: [{ "el.userToken": req.query.userToken }],
+          new: true,
+        }
+      );
+      // update Votes
+      updateVotes(song);
+      // update currentPositions
+      updatePositions();
+      res.send(song);
+    } else {
+      // can't vote
+      res.status(422).send({ error: "You already voted today!" });
     }
-  );
-
-  // update Votes
-  let totalVotes = 0;
-  song.rankingVotes.map((vote) => {
-    return (totalVotes += parseInt(vote.votes));
-  });
-  song.totalVotes = totalVotes;
-  await song.save();
-
-  // update currentPositions
-  updatePositions();
-
-  res.send(song);
+  } else {
+    // create new user
+    const newUser = new User({ userToken, lastVoted: Date.now() });
+    await newUser.save();
+    // create new vote
+    const vote = { userToken, votes };
+    const song = await Song.find({ _id: req.params.id });
+    await song.rankingVotes.push(vote);
+    await song.save();
+    // update Votes
+    updateVotes(song);
+    // update currentPositions
+    updatePositions();
+    res.send(song);
+  }
 });
 
 router.put("/song/:id", async (req, res) => {
