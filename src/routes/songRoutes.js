@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 
 const Song = mongoose.model("Song");
+const User = mongoose.model("User");
 
 const router = express.Router();
 
