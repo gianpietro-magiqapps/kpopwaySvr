@@ -5,4 +5,4 @@ const userSchema = new mongoose.Schema({
   lastVoted: Date,
 });
 
-mongoose.model("Song", userSchema);
+mongoose.model("User", userSchema);
