@@ -16,9 +16,11 @@ const updatePositions = async () => {
     rankingSong.currentPosition = i + 1;
     await rankingSong.save();
   }
-  songs = await Song.find({ inRanking: true }).sort({
-    totalVotes: "desc",
-  });
+  songs = await Song.find({ inRanking: true })
+    .populate("artistId")
+    .sort({
+      totalVotes: "desc",
+    });
   return songs;
 };
 
@@ -41,9 +43,11 @@ const userCanVote = (lastVoted, now) => {
 router.get("/songs", async (req, res) => {
   const inRanking = req.query.inRanking || false;
   const songs = inRanking
-    ? await Song.find({ inRanking: inRanking }).sort({
-        totalVotes: "desc",
-      })
+    ? await Song.find({ inRanking: inRanking })
+        .populate("artistId")
+        .sort({
+          totalVotes: "desc",
+        })
     : await Song.find().sort({
         name: "asc",
       });
