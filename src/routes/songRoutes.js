@@ -16,6 +16,9 @@ const updatePositions = async () => {
     rankingSong.currentPosition = i + 1;
     await rankingSong.save();
   }
+  return await Song.find({ inRanking: true }).sort({
+    totalVotes: "desc",
+  });
 };
 
 const updateTotalVotes = async (song) => {
@@ -62,9 +65,9 @@ router.post("/songs", async (req, res) => {
     await song.save();
 
     // update currentPositions
-    updatePositions();
+    const rankingSongs = updatePositions();
 
-    res.send(song);
+    res.send(rankingSongs);
   } catch (err) {
     res.status(422).send({ error: err.message });
   }
@@ -109,8 +112,8 @@ router.put("/song/:id/addVotes", async (req, res) => {
         // update Votes
         updateTotalVotes(song);
         // update currentPositions
-        updatePositions();
-        res.send(song);
+        const rankingSongs = updatePositions();
+        res.send(rankingSongs);
       } else {
         // can't vote
         res.status(422).send({ error: "You already voted today!" });
@@ -127,8 +130,8 @@ router.put("/song/:id/addVotes", async (req, res) => {
       // update Votes
       updateTotalVotes(song);
       // update currentPositions
-      updatePositions();
-      res.send(song);
+      const rankingSongs = updatePositions();
+      res.send(rankingSongs);
     }
   }
 });
