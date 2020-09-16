@@ -65,9 +65,9 @@ router.post("/songs", async (req, res) => {
     await song.save();
 
     // update currentPositions
-    const rankingSongs = updatePositions();
+    updatePositions();
 
-    res.send(rankingSongs);
+    res.send(song);
   } catch (err) {
     res.status(422).send({ error: err.message });
   }
