@@ -17,7 +17,7 @@ const updatePositions = async () => {
     await rankingSong.save();
   }
   songs = await Song.find({ inRanking: true })
-    .populate("artistId")
+    .populate("artist")
     .sort({
       totalVotes: "desc",
     });
@@ -44,7 +44,7 @@ router.get("/songs", async (req, res) => {
   const inRanking = req.query.inRanking || false;
   const songs = inRanking
     ? await Song.find({ inRanking: inRanking })
-        .populate("artistId")
+        .populate("artist")
         .sort({
           totalVotes: "desc",
         })
