@@ -10,7 +10,7 @@ const votesSchema = new mongoose.Schema({
 
 const songSchema = new mongoose.Schema({
   name: String,
-  artistId: {
+  artist: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Artist",
   },
