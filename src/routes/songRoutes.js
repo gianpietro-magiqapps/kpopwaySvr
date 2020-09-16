@@ -18,13 +18,20 @@ const updatePositions = async () => {
   }
 };
 
-const updateVotes = async (song) => {
+const updateTotalVotes = async (song) => {
   let totalVotes = 0;
   song.rankingVotes.map((vote) => {
     return (totalVotes += parseInt(vote.votes));
   });
   song.totalVotes = totalVotes;
   await song.save();
+};
+
+const userCanVote = (lastVoted, now) => {
+  if (Math.abs(lastVoted - now) <= 60000) {
+    return "paused";
+  }
+  return "enabled";
 };
 
 router.get("/songs", async (req, res) => {
@@ -64,50 +71,65 @@ router.post("/songs", async (req, res) => {
 });
 
 router.put("/song/:id/addVotes", async (req, res) => {
-  const { userToken, votes } = req.query;
+  const now = new Date();
+  if (now.getMinutes() > 50) {
+    res.status(422).send({ error: "voting is disabled!" });
+  } else {
+    const { userToken, votes } = req.query;
+    const songId = req.params.id;
 
-  const userCount = await User.count({ userToken });
-  console.log(userCount);
+    const user = await User.findOne({ userToken });
 
-  if (userCount) {
-    // can vote?
-    // if (user.lastVoted.day !== Date.now().day) {
-    if (true) {
-      console.log("user exists, can add vote");
-      // can vote, add vote
-      const song = await Song.findOneAndUpdate(
-        { _id: req.params.id },
-        { $inc: { "rankingVotes.$[el].votes": parseInt(votes) } },
-        {
-          arrayFilters: [{ "el.userToken": userToken }],
-          new: true,
+    if (user) {
+      // can vote?
+      if (userCanVote(user.lastVoted, now) === "enabled") {
+        // can vote, check if new song
+        const song = await Song.findOne({ _id: songId });
+
+        let voted = false;
+        for (var i = 0; i < song.rankingVotes.length; i++) {
+          if (song.rankingVotes[i].userId.equals(user._id)) {
+            song.rankingVotes[i].votes += parseInt(votes);
+            user.lastVoted = now;
+            await user.save();
+            await song.save();
+            voted = true;
+            break;
+          }
         }
-      );
+
+        if (!voted) {
+          const vote = { userId: user._id, votes };
+          await song.rankingVotes.push(vote);
+          user.lastVoted = now;
+          await user.save();
+          await song.save();
+        }
+
+        // update Votes
+        updateTotalVotes(song);
+        // update currentPositions
+        updatePositions();
+        res.send(song);
+      } else {
+        // can't vote
+        res.status(422).send({ error: "You already voted today!" });
+      }
+    } else {
+      // create new user
+      const newUser = new User({ userToken, lastVoted: new Date() });
+      await newUser.save();
+      // create new vote
+      const vote = { userId: newUser._id, votes };
+      const song = await Song.findOne({ _id: songId });
+      await song.rankingVotes.push(vote);
+      await song.save();
       // update Votes
-      updateVotes(song);
+      updateTotalVotes(song);
       // update currentPositions
       updatePositions();
       res.send(song);
-    } else {
-      console.log("user exists, can't add vote");
-      // can't vote
-      res.status(422).send({ error: "You already voted today!" });
     }
-  } else {
-    console.log("user does not exist, creating user and vote");
-    // create new user
-    const newUser = new User({ userToken, lastVoted: Date.now() });
-    await newUser.save();
-    // create new vote
-    const vote = { userToken, votes };
-    const song = await Song.find({ _id: req.params.id });
-    await song.rankingVotes.push(vote);
-    await song.save();
-    // update Votes
-    updateVotes(song);
-    // update currentPositions
-    updatePositions();
-    res.send(song);
   }
 });
 
