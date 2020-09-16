@@ -7,7 +7,7 @@ const User = mongoose.model("User");
 const router = express.Router();
 
 const updatePositions = async () => {
-  const songs = await Song.find({ inRanking: true }).sort({
+  let songs = await Song.find({ inRanking: true }).sort({
     totalVotes: "desc",
   });
   var i;
@@ -16,9 +16,10 @@ const updatePositions = async () => {
     rankingSong.currentPosition = i + 1;
     await rankingSong.save();
   }
-  return await Song.find({ inRanking: true }).sort({
+  songs = await Song.find({ inRanking: true }).sort({
     totalVotes: "desc",
   });
+  return songs;
 };
 
 const updateTotalVotes = async (song) => {
@@ -110,9 +111,9 @@ router.put("/song/:id/addVotes", async (req, res) => {
         }
 
         // update Votes
-        updateTotalVotes(song);
+        await updateTotalVotes(song);
         // update currentPositions
-        const rankingSongs = updatePositions();
+        const rankingSongs = await updatePositions();
         res.send(rankingSongs);
       } else {
         // can't vote
@@ -128,9 +129,9 @@ router.put("/song/:id/addVotes", async (req, res) => {
       await song.rankingVotes.push(vote);
       await song.save();
       // update Votes
-      updateTotalVotes(song);
+      await updateTotalVotes(song);
       // update currentPositions
-      const rankingSongs = updatePositions();
+      const rankingSongs = await updatePositions();
       res.send(rankingSongs);
     }
   }
