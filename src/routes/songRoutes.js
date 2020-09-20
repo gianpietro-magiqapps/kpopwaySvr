@@ -34,7 +34,7 @@ const updateTotalVotes = async (song) => {
 };
 
 const userCanVote = (lastVoted, now) => {
-  if (Math.abs(lastVoted - now) <= 60000) {
+  if (Math.abs(lastVoted - now) <= 900000) {
     return "paused";
   }
   return "enabled";
@@ -48,7 +48,7 @@ router.get("/songs", async (req, res) => {
         .sort({
           totalVotes: "desc",
         })
-    : await Song.find().sort({
+    : await Song.find()..populate("artist").sort({
         name: "asc",
       });
   res.send(songs);
