@@ -48,9 +48,11 @@ router.get("/songs", async (req, res) => {
         .sort({
           totalVotes: "desc",
         })
-    : await Song.find()..populate("artist").sort({
-        name: "asc",
-      });
+    : await Song.find()
+        .populate("artist")
+        .sort({
+          name: "asc",
+        });
   res.send(songs);
 });
 
