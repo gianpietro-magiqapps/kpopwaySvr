@@ -123,7 +123,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
         res.send(rankingSongs);
       } else {
         // can't vote
-        res.status(422).send({ error: "You already voted today!" });
+        res.status(422).send({ error: "You can vote ONCE every 15 minutes." });
       }
     } else {
       // create new user
