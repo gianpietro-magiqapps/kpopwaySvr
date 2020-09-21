@@ -44,8 +44,8 @@ const votingDisabled = (now) => {
   console.log(now);
   console.log(now.getDay(), now.getHours());
   if (
-    (now.getDay() === "1" && now.getHours() >= 10) ||
-    (now.getDay() === "2" && now.getHours() < 10)
+    (now.getDay() === "1" && now.getHours() >= 1) ||
+    (now.getDay() === "2" && now.getHours() < 1)
   ) {
     return true;
   }
@@ -93,7 +93,7 @@ router.post("/songs", async (req, res) => {
 });
 
 router.put("/song/:id/addVotes", async (req, res) => {
-  const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" });
+  const now = new Date.UTC();
   if (votingDisabled(now)) {
     res.status(422).send({ error: "voting is disabled!" });
   } else {
