@@ -41,10 +41,11 @@ const userCanVote = (lastVoted, now) => {
 };
 
 const votingDisabled = (now) => {
+  console.log(now);
   console.log(now.getDay(), now.getHours());
   if (
-    (now.getDay() === "Monday" && now.getHours() >= 10) ||
-    (now.getDay() === "Tuesday" && now.getHours() < 10)
+    (now.getDay() === "1" && now.getHours() >= 10) ||
+    (now.getDay() === "2" && now.getHours() < 10)
   ) {
     return true;
   }
