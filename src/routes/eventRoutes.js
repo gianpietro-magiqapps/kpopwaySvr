@@ -18,9 +18,11 @@ router.get("/event/:id", async (req, res) => {
 });
 
 router.post("/events", async (req, res) => {
-  const { name, startDate, endDate } = req.body;
-  if (!name || !startDate || !endDate) {
-    return res.status(422).send({ error: "You must provide a name and dates" });
+  const { name, startTime, duration } = req.body;
+  if (!name || !startTime || !duration) {
+    return res
+      .status(422)
+      .send({ error: "You must provide a name, time and duration" });
   }
 
   try {
