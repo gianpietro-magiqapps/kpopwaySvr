@@ -94,12 +94,9 @@ router.post("/songs", async (req, res) => {
 router.put("/song/:id/addVotes", async (req, res) => {
   const now = moment().utcOffset("+09:00");
   if (votingDisabled(now)) {
-    res
-      .status(422)
-      .send({
-        error:
-          "Voting is disabled now. It will be restarted on Tuesday 10am KST",
-      });
+    res.status(422).send({
+      error: "Voting disabled, restarts on Tuesday 10am KST",
+    });
   } else {
     const { userToken, votes } = req.query;
     const songId = req.params.id;
