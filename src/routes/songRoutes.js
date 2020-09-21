@@ -35,8 +35,6 @@ const updateTotalVotes = async (song) => {
 };
 
 const userCanVote = (lastVoted, now) => {
-  console.log("last", lastVoted);
-  console.log("now", now);
   if (Math.abs(lastVoted - now) <= 900000) {
     return "paused";
   }
@@ -44,10 +42,8 @@ const userCanVote = (lastVoted, now) => {
 };
 
 const votingDisabled = (now) => {
-  console.log("now is", now);
-  console.log(now.format("dddd"), now.format("HH"));
   if (
-    (now.format("dddd") === "Monday" && now.format("HH") >= 15) ||
+    (now.format("dddd") === "Monday" && now.format("HH") >= 10) ||
     (now.format("dddd") === "Tuesday" && now.format("HH") < 10)
   ) {
     return true;
