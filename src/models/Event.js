@@ -6,7 +6,7 @@ const eventSchema = new mongoose.Schema({
   image: String,
   day: String,
   startTime: String,
-  duration: Number,
+  endTime: String,
   radio: String,
 });
 
