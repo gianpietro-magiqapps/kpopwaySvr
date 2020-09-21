@@ -40,6 +40,17 @@ const userCanVote = (lastVoted, now) => {
   return "enabled";
 };
 
+const votingDisabled = (now) => {
+  console.log(now.getDay(), now.getHours());
+  if (
+    (now.getDay() === "Monday" && now.getHours() >= 10) ||
+    (now.getDay() === "Tuesday" && now.getHours() < 10)
+  ) {
+    return true;
+  }
+  return false;
+};
+
 router.get("/songs", async (req, res) => {
   const inRanking = req.query.inRanking || false;
   const songs = inRanking
@@ -81,8 +92,8 @@ router.post("/songs", async (req, res) => {
 });
 
 router.put("/song/:id/addVotes", async (req, res) => {
-  const now = new Date();
-  if (now.getMinutes() > 50) {
+  const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" });
+  if (votingDisabled(now)) {
     res.status(422).send({ error: "voting is disabled!" });
   } else {
     const { userToken, votes } = req.query;
