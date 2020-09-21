@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const moment = require("moment");
 
 const Song = mongoose.model("Song");
 const User = mongoose.model("User");
@@ -34,6 +35,8 @@ const updateTotalVotes = async (song) => {
 };
 
 const userCanVote = (lastVoted, now) => {
+  console.log("last", lastVoted);
+  console.log("now", now);
   if (Math.abs(lastVoted - now) <= 900000) {
     return "paused";
   }
@@ -41,11 +44,11 @@ const userCanVote = (lastVoted, now) => {
 };
 
 const votingDisabled = (now) => {
-  console.log(now);
-  console.log(now.getDay(), now.getHours());
+  console.log("now is", now);
+  console.log(now.format("dddd"), now.format("HH"));
   if (
-    (now.getDay() === "1" && now.getHours() >= 1) ||
-    (now.getDay() === "2" && now.getHours() < 1)
+    (now.format("dddd") === "Monday" && now.format("HH") >= 10) ||
+    (now.format("dddd") === "Tuesday" && now.format("HH") < 10)
   ) {
     return true;
   }
@@ -93,7 +96,7 @@ router.post("/songs", async (req, res) => {
 });
 
 router.put("/song/:id/addVotes", async (req, res) => {
-  const now = new Date.UTC();
+  const now = moment().utcOffset("+09:00");
   if (votingDisabled(now)) {
     res.status(422).send({ error: "voting is disabled!" });
   } else {
