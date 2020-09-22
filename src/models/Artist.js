@@ -4,8 +4,8 @@ const artistSchema = new mongoose.Schema({
   name: String,
   description: String,
   image: String,
-  inRewards: Boolean,
-  broadcastCredits: Number,
+  inRewards: {type: Boolean, default: false},
+  broadcastCredits: {type: Number, default: 0},
 });
 
 mongoose.model("Artist", artistSchema);
