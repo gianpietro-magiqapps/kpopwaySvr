@@ -5,8 +5,8 @@ const eventSchema = new mongoose.Schema({
   description: String,
   image: String,
   day: String,
-  startTime: Date,
-  endTime: Date,
+  startTime: String,
+  endTime: String,
   radio: String,
 });
 

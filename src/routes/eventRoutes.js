@@ -6,8 +6,8 @@ const Event = mongoose.model("Event");
 const router = express.Router();
 
 router.get("/events", async (req, res) => {
-  const { radio, day } = req.query;
-  const events = await Event.find({ radio, day }).sort({
+  const { radio } = req.query;
+  const events = await Event.find({ radio }).sort({
     startTime: "asc",
   });
   res.send(events);
