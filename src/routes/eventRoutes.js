@@ -8,11 +8,11 @@ const router = express.Router();
 router.get("/events", async (req, res) => {
   const { radio } = req.query;
   const events = await Event.find({ radio })
-    .populate("program")
     .sort({
       day: "asc",
       startTime: "asc",
-    });
+    })
+    .populate("program");
   res.send(events);
 });
 
