@@ -7,22 +7,26 @@ const router = express.Router();
 
 router.get("/events", async (req, res) => {
   const { radio } = req.query;
-  const events = await Event.find({ radio }).sort({
-    day: "asc",
-    startTime: "asc",
-  });
+  const events = await Event.find({ radio })
+    .populate("program")
+    .sort({
+      day: "asc",
+      startTime: "asc",
+    });
   res.send(events);
 });
 
 router.get("/event/:id", async (req, res) => {
-  const event = await Event.findOne({ _id: req.params.id });
+  const event = await Event.findOne({ _id: req.params.id }).populate("program");
   res.send(event);
 });
 
 router.post("/events", async (req, res) => {
-  const { name, startTime, endTime } = req.body;
-  if (!name || !startTime || !endTime) {
-    return res.status(422).send({ error: "You must provide a name and times" });
+  const { program, startTime, endTime } = req.body;
+  if (!program || !startTime || !endTime) {
+    return res
+      .status(422)
+      .send({ error: "You must provide a program name and times" });
   }
 
   try {

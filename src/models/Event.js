@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  image: String,
+  program: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Program",
+  },
   day: Number,
   startTime: String,
   endTime: String,
