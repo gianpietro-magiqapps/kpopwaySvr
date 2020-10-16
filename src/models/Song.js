@@ -24,6 +24,10 @@ const songSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  adminVotes: {
+    type: Number,
+    default: 0,
+  },
 });
 
 mongoose.model("Song", songSchema);

@@ -30,7 +30,7 @@ const updateTotalVotes = async (song) => {
   song.rankingVotes.map((vote) => {
     return (totalVotes += parseInt(vote.votes));
   });
-  song.totalVotes = totalVotes;
+  song.totalVotes = totalVotes + song.adminVotes;
   await song.save();
 };
 
