@@ -160,7 +160,11 @@ router.put("/song/:id", async (req, res) => {
   const song = await Song.findOne({ _id: req.params.id });
   Object.assign(song, req.body);
   await song.save();
-  res.send(song);
+  // update Votes
+  await updateTotalVotes(song);
+  // update currentPositions
+  const rankingSongs = await updatePositions();
+  res.send(rankingSongs);
 });
 
 module.exports = router;
