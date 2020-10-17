@@ -167,4 +167,12 @@ router.put("/song/:id", async (req, res) => {
   res.send(rankingSongs);
 });
 
+router.delete("/songs/votes", async (req, res) => {
+  Song.updateMany(
+    {},
+    { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } }
+  );
+  res.send("success");
+});
+
 module.exports = router;
