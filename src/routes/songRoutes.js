@@ -170,7 +170,8 @@ router.put("/song/:id", async (req, res) => {
 router.delete("/songs/votes", async (req, res) => {
   Song.updateMany(
     {},
-    { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } }
+    { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } },
+    { multi: true }
   );
   res.send("success");
 });
