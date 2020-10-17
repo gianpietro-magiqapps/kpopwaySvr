@@ -3,4 +3,3 @@ tools
 node_modules
 # macOS
 .DS_Store
-mongo*
