@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const keys = require("./config/keys");
 
 const User = mongoose.model("User");
 
@@ -27,6 +28,15 @@ router.post("/users", async (req, res) => {
     res.send(user);
   } catch (err) {
     res.status(422).send({ error: err.message });
+  }
+});
+
+router.post("/user/admin/login", async (req, res) => {
+  const password = req.params.password;
+  if ((password = keys.adminPassword)) {
+    res.send("success");
+  } else {
+    res.send("failed");
   }
 });
 
