@@ -33,7 +33,7 @@ router.post("/users", async (req, res) => {
 
 router.post("/user/admin/login", async (req, res) => {
   const password = req.body.password;
-  if ((password = keys.adminPassword)) {
+  if (password === keys.adminPassword) {
     res.send("success");
   } else {
     res.send("failed");
