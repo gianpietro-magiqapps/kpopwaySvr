@@ -58,7 +58,7 @@ router.get("/songs", async (req, res) => {
     ? await Song.find({ inRanking: inRanking })
         .populate("artist")
         .sort({
-          currentPosition: "desc",
+          currentPosition: "asc",
         })
     : await Song.find()
         .populate("artist")
