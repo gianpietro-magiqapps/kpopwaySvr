@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const moment = require("moment");
+const requireAuth = require("../middlewares/requireAuth");
 
 const Song = mongoose.model("Song");
 const User = mongoose.model("User");
@@ -168,7 +169,7 @@ router.put("/song/:id", async (req, res) => {
   res.send(rankingSongs);
 });
 
-router.delete("/songs/votes", async (req, res) => {
+router.delete("/songs/votes", requireAuth, async (req, res) => {
   await Song.updateMany(
     {},
     { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } },
