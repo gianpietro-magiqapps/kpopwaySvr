@@ -42,7 +42,7 @@ router.post("/user/admin/login", async (req, res) => {
         .toString(36)
         .substring(2, 15);
     // save to adminUser
-    const adminUser = await User.findById("admin");
+    const adminUser = await User.findById("5f8c717a94198efbb48a6a7f");
     adminUser.userToken = adminToken;
     await adminUser.save();
     res.send({ adminToken, adminMode: true });

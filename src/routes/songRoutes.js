@@ -174,7 +174,8 @@ router.delete("/songs/votes", async (req, res) => {
     { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } },
     { multi: true }
   );
-  await User.remove({});
+  // Remove all users but admin
+  await User.remove({ _id: { $ne: "5f8c717a94198efbb48a6a7f" } });
   res.send("success");
 });
 
