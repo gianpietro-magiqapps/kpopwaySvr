@@ -172,12 +172,9 @@ router.delete("/songs/votes", async (req, res) => {
   Song.updateMany(
     {},
     { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } },
-    { multi: true },
-    function(error) {
-      console.log(error);
-    }
+    { multi: true }
   );
-  User.deleteMany({}, { multi: true });
+  User.remove({});
   res.send("success");
 });
 
