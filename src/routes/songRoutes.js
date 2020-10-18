@@ -177,7 +177,7 @@ router.delete("/songs/votes", async (req, res) => {
       console.log(error);
     }
   );
-  User.deleteMany({});
+  User.deleteMany({}, { multi: true });
   res.send("success");
 });
 
