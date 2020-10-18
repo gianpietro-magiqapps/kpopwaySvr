@@ -34,9 +34,20 @@ router.post("/users", async (req, res) => {
 router.post("/user/admin/login", async (req, res) => {
   const password = req.body.password;
   if (password === keys.adminPassword) {
-    res.send("success");
+    const adminToken =
+      Math.random()
+        .toString(36)
+        .substring(2, 15) +
+      Math.random()
+        .toString(36)
+        .substring(2, 15);
+    // save to adminUser
+    const adminUser = await User.findById("admin");
+    adminUser.userToken = adminToken;
+    await adminUser.save();
+    res.send({ adminToken, adminMode: true });
   } else {
-    res.send("failed");
+    res.send({ adminToken: null, adminMode: false });
   }
 });
 
