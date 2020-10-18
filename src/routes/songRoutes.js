@@ -174,7 +174,7 @@ router.delete("/songs/votes", async (req, res) => {
     { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } },
     { multi: true }
   );
-  await User.deleteMany({});
+  await User.remove({});
   res.send("success");
 });
 
