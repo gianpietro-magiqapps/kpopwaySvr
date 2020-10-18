@@ -30,7 +30,8 @@ const updateTotalVotes = async (song) => {
   song.rankingVotes.map((vote) => {
     return (totalVotes += parseInt(vote.votes));
   });
-  song.totalVotes = totalVotes + song.adminVotes;
+  totalVotes = totalVotes + song.adminVotes;
+  song.totalVotes = totalVotes <= 999999 ? totalVotes : 999999;
   await song.save();
 };
 
