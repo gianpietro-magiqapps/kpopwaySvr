@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const requireAuth = require("../middlewares/requireAuth");
 
 const Program = mongoose.model("Program");
 
@@ -17,7 +18,7 @@ router.get("/program/:id", async (req, res) => {
   res.send(program);
 });
 
-router.post("/programs", async (req, res) => {
+router.post("/programs", requireAuth, async (req, res) => {
   const { name } = req.body;
   if (!name) {
     return res.status(422).send({ error: "You must provide a name" });
@@ -32,7 +33,7 @@ router.post("/programs", async (req, res) => {
   }
 });
 
-router.put("/program/:id", async (req, res) => {
+router.put("/program/:id", requireAuth, async (req, res) => {
   const program = await Program.findOne({ _id: req.params.id });
   Object.assign(program, req.body);
   await program.save();

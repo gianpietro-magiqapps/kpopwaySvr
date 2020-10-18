@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-//const requireAuth = require("../middlewares/requireAuth");
+const requireAuth = require("../middlewares/requireAuth");
 
 const AWS = require("aws-sdk");
 const { v1: uuid } = require("uuid");
@@ -11,7 +11,7 @@ const s3 = new AWS.S3({
   secretAccessKey: keys.secretAccessKey,
 });
 
-router.get("/upload", (req, res) => {
+router.get("/upload", requireAuth, (req, res) => {
   let baseDir = req.query.type || "kpopway";
   let fileName = `${uuid()}.jpeg`;
 
@@ -30,7 +30,7 @@ router.get("/upload", (req, res) => {
   );
 });
 
-router.delete("/upload", (req, res) => {
+router.delete("/upload", requireAuth, (req, res) => {
   const key = req.query.key;
 
   s3.deleteObject(

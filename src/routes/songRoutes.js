@@ -74,7 +74,7 @@ router.get("/song/:id", async (req, res) => {
   res.send(song);
 });
 
-router.post("/songs", async (req, res) => {
+router.post("/songs", requireAuth, async (req, res) => {
   const { name } = req.body;
   if (!name) {
     return res.status(422).send({ error: "You must provide a name" });
@@ -93,7 +93,7 @@ router.post("/songs", async (req, res) => {
   }
 });
 
-router.put("/song/:id/addVotes", async (req, res) => {
+router.put("/song/:id/addVotes", requireAuth, async (req, res) => {
   const now = moment().utcOffset("+09:00");
   if (votingDisabled(now)) {
     res.status(422).send({
@@ -158,7 +158,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
   }
 });
 
-router.put("/song/:id", async (req, res) => {
+router.put("/song/:id", requireAuth, async (req, res) => {
   const song = await Song.findOne({ _id: req.params.id });
   Object.assign(song, req.body);
   await song.save();

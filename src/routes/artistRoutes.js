@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const requireAuth = require("../middlewares/requireAuth");
 
 const Artist = mongoose.model("Artist");
 
@@ -37,7 +38,7 @@ router.post("/artists", async (req, res) => {
   }
 });
 
-router.put("/artist/:id/addBroadcastCredits", async (req, res) => {
+router.put("/artist/:id/addBroadcastCredits", requireAuth, async (req, res) => {
   const artist = await Artist.findOneAndUpdate(
     { _id: req.params.id },
     { $inc: { broadcastCredits: parseInt(req.query.credits) } }
@@ -45,7 +46,7 @@ router.put("/artist/:id/addBroadcastCredits", async (req, res) => {
   res.send(artist);
 });
 
-router.put("/artist/:id", async (req, res) => {
+router.put("/artist/:id", requireAuth, async (req, res) => {
   const artist = await Artist.findOne({ _id: req.params.id });
   Object.assign(artist, req.body);
   await artist.save();

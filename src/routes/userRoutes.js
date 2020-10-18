@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const keys = require("../config/keys");
+//const requireAuth = require("../middlewares/requireAuth");
 
 const User = mongoose.model("User");
 

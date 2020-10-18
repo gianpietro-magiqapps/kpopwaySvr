@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const requireAuth = require("../middlewares/requireAuth");
 
 const Event = mongoose.model("Event");
 
@@ -21,7 +22,7 @@ router.get("/event/:id", async (req, res) => {
   res.send(event);
 });
 
-router.post("/events", async (req, res) => {
+router.post("/events", requireAuth, async (req, res) => {
   const { program, startTime, endTime } = req.body;
   if (!program || !startTime || !endTime) {
     return res
@@ -38,7 +39,7 @@ router.post("/events", async (req, res) => {
   }
 });
 
-router.put("/event/:id", async (req, res) => {
+router.put("/event/:id", requireAuth, async (req, res) => {
   const event = await Event.findOne({ _id: req.params.id });
   Object.assign(event, req.body);
   await event.save();
