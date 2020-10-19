@@ -53,4 +53,13 @@ router.put("/artist/:id", requireAuth, async (req, res) => {
   res.send(artist);
 });
 
+router.delete("/artists/credits", requireAuth, async (req, res) => {
+  await Artist.updateMany(
+    {},
+    { $set: { broadcastCredits: 0 } },
+    { multi: true }
+  );
+  res.send("success");
+});
+
 module.exports = router;
