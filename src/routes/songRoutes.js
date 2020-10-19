@@ -93,7 +93,7 @@ router.post("/songs", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/song/:id/addVotes", requireAuth, async (req, res) => {
+router.put("/song/:id/addVotes", async (req, res) => {
   const now = moment().utcOffset("+09:00");
   if (votingDisabled(now)) {
     res.status(422).send({
