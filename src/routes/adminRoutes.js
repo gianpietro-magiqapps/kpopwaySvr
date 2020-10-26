@@ -6,8 +6,7 @@ const Admin = mongoose.model("Admin");
 const router = express.Router();
 
 router.get("/admin/rewardCredits", async (req, res) => {
-  const rewardCredits = await Admin.find({ id: "5f9631bd6bb65c33c141c2bb" })
-    .rewardCredits;
+  const rewardCredits = await Admin.find();
   console.log(rewardCredits);
   res.send(rewardCredits);
 });
