@@ -3,7 +3,7 @@ require("./models/Song");
 require("./models/User");
 require("./models/Event");
 require("./models/Program");
-require("./models/Admin");
+require("./models/Setting");
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -13,7 +13,7 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const userRoutes = require("./routes/userRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const programRoutes = require("./routes/programRoutes");
-const adminRoutes = require("./routes/adminRoutes");
+const settingRoutes = require("./routes/settingRoutes");
 const keys = require("./config/keys");
 
 const app = express();
@@ -25,7 +25,7 @@ app.use(uploadRoutes);
 app.use(userRoutes);
 app.use(eventRoutes);
 app.use(programRoutes);
-app.use(adminRoutes);
+app.use(settingRoutes);
 
 mongoose.connect(keys.mongoURI, {
   useNewUrlParser: true,
