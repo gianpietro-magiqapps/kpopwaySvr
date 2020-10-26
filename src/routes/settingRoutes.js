@@ -6,8 +6,8 @@ const Setting = mongoose.model("Setting");
 const router = express.Router();
 
 router.get("/settings", async (req, res) => {
-  const rewardCredits = await Setting.findOne().rewardCredits;
-  res.send(rewardCredits);
+  const settings = await Setting.findById("5f96361692e4625a3178dac2");
+  res.send(settings);
 });
 
 router.post("/settings", async (req, res) => {
