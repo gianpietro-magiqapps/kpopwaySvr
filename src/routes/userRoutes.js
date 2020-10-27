@@ -53,13 +53,13 @@ router.post("/user/admin/login", async (req, res) => {
 });
 
 router.post("/user/admin/device", async (req, res) => {
-  const deviceId = req.body.deviceId;
-  var adminDeviceIds = keys.adminDeviceIds.split(" ");
-  if (adminDeviceIds.includes(deviceId)) {
-    res.send(true);
-  } else {
-    res.send(false);
-  }
+  // const deviceId = req.body.deviceId;
+  // var adminDeviceIds = keys.adminDeviceIds.split(" ");
+  // if (adminDeviceIds.includes(deviceId)) {
+  res.send(true);
+  // } else {
+  //   res.send(false);
+  // }
 });
 
 router.put("/user/:id", async (req, res) => {
