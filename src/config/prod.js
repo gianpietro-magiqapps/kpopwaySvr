@@ -5,4 +5,6 @@ module.exports = {
   cryptoKey: process.env.cryptoKey,
   adminPassword: process.env.adminPassword,
   adminDeviceIds: process.env.adminDeviceIds,
+  username: process.env.username,
+  password: process.env.password,
 };
