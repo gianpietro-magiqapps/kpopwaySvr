@@ -17,7 +17,6 @@
     "moment": "^2.28.0",
     "mongoose": "^5.10.5",
     "nodemon": "^2.0.4",
-    "puppeteer": "^5.4.1",
     "uuid": "^8.3.0"
   }
 }
