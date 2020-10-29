@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const settingSchema = new mongoose.Schema({
-  rewardCredits: Number,
+  rewardCredits: String,
 });
 
 mongoose.model("Setting", settingSchema);

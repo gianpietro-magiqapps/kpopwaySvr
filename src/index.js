@@ -1,3 +1,4 @@
+//require("./services/scraper");
 require("./models/Artist");
 require("./models/Song");
 require("./models/User");
