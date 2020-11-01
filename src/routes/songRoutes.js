@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const moment = require("moment");
+const keys = require("../config/keys");
 const requireAuth = require("../middlewares/requireAuth");
 
 const Song = mongoose.model("Song");
@@ -36,7 +37,10 @@ const updateTotalVotes = async (song) => {
   await song.save();
 };
 
-const userCanVote = (lastVoted, now) => {
+const userCanVote = (lastVoted, now, userToken) => {
+  if (keys.adminDeviceIds.split(" ").includes(userToken)) {
+    return "enabled";
+  }
   if (Math.abs(lastVoted - now) <= 900000) {
     return "paused";
   }
@@ -107,7 +111,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
 
     if (user) {
       // can vote?
-      if (userCanVote(user.lastVoted, now) === "enabled") {
+      if (userCanVote(user.lastVoted, now, user.userToken) === "enabled") {
         // can vote, check if new song
         const song = await Song.findOne({ _id: songId });
 
