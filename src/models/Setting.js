@@ -6,6 +6,9 @@ const settingSchema = new mongoose.Schema({
   rankingTitle: String,
   rankingDeadline: String,
   rankingRestart: String,
+  commentsColors: Array,
+  commentsNicknames: Array,
+  commentsAvatars: Array,
 });
 
 mongoose.model("Setting", settingSchema);

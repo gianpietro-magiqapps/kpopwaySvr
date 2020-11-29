@@ -17,6 +17,11 @@ router.get("/user/:id", async (req, res) => {
   res.send(user);
 });
 
+router.get("/user/deviceId/:deviceId", async (req, res) => {
+  const user = await User.findOne({ userToken: req.params.deviceId });
+  res.send(user);
+});
+
 router.post("/users", async (req, res) => {
   const { userToken } = req.body;
   if (!userToken) {
@@ -64,6 +69,13 @@ router.post("/user/admin/device", async (req, res) => {
 
 router.put("/user/:id", async (req, res) => {
   const user = await User.findOne({ _id: req.params.id });
+  Object.assign(user, req.body);
+  await user.save();
+  res.send(user);
+});
+
+router.put("/user/deviceId/:deviceId", async (req, res) => {
+  const user = await User.findOne({ userToken: req.params.deviceId });
   Object.assign(user, req.body);
   await user.save();
   res.send(user);

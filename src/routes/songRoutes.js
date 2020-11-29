@@ -179,8 +179,8 @@ router.delete("/songs/votes", requireAuth, async (req, res) => {
     { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } },
     { multi: true }
   );
-  // Remove all users but admin
-  await User.remove({ _id: { $ne: "5f8c717a94198efbb48a6a7f" } });
+  // Remove all users but admin --> Deprecated to persist comments
+  // await User.remove({ _id: { $ne: "5f8c717a94198efbb48a6a7f" } });
   res.send("success");
 });
 
