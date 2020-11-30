@@ -4,6 +4,7 @@ const keys = require("../config/keys");
 //const requireAuth = require("../middlewares/requireAuth");
 
 const User = mongoose.model("User");
+const Setting = mongoose.model("Setting");
 
 const router = express.Router();
 
@@ -19,7 +20,29 @@ router.get("/user/:id", async (req, res) => {
 
 router.get("/user/deviceId/:deviceId", async (req, res) => {
   const user = await User.findOne({ userToken: req.params.deviceId });
-  res.send(user);
+  if (!user) {
+    // this deviceId has no user associated, create new user
+    const settings = await Setting.findOne();
+    const randomNames = settings.commentsNicknames;
+    const randomAvatars = settings.commentsAvatars;
+    const randomColors = settings.commentsColors;
+    const newNickname =
+      randomNames[Math.floor(Math.random() * randomNames.length)];
+    const newAvatar =
+      randomAvatars[Math.floor(Math.random() * randomAvatars.length)];
+    const newColor =
+      randomColors[Math.floor(Math.random() * randomColors.length)];
+    const newUser = new User({
+      userToken: req.params.deviceId,
+      nickname: newNickname,
+      avatar: newAvatar,
+      color: newColor,
+    });
+    await newUser.save();
+    res.send(newUser);
+  } else {
+    res.send(user);
+  }
 });
 
 router.post("/users", async (req, res) => {
