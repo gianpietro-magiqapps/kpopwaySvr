@@ -79,6 +79,7 @@ router.get("/song/:id", async (req, res) => {
 });
 
 router.post("/songs", requireAuth, async (req, res) => {
+  // router.post("/songs", async (req, res) => {
   const { name } = req.body;
   if (!name) {
     return res.status(422).send({ error: "You must provide a name" });
@@ -111,7 +112,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
 
     if (user) {
       // can vote?
-      if (userCanVote(user.lastVoted, now, user.userToken) === "enabled") {
+      if (userCanVote(user.lastVotedSong, now, user.userToken) === "enabled") {
         // can vote, check if new song
         const song = await Song.findOne({ _id: songId });
 
@@ -120,6 +121,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
           if (song.rankingVotes[i].userId.equals(user._id)) {
             song.rankingVotes[i].votes += parseInt(votes);
             user.lastVoted = now;
+            user.lastVotedSong = now;
             await user.save();
             await song.save();
             voted = true;
@@ -131,6 +133,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
           const vote = { userId: user._id, votes };
           await song.rankingVotes.push(vote);
           user.lastVoted = now;
+          user.lastVotedSong = now;
           await user.save();
           await song.save();
         }
@@ -146,7 +149,11 @@ router.put("/song/:id/addVotes", async (req, res) => {
       }
     } else {
       // create new user
-      const newUser = new User({ userToken, lastVoted: new Date() });
+      const newUser = new User({
+        userToken,
+        lastVoted: new Date(),
+        lastVotedSong: new Date(),
+      });
       await newUser.save();
       // create new vote
       const vote = { userId: newUser._id, votes };
@@ -163,6 +170,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
 });
 
 router.put("/song/:id", requireAuth, async (req, res) => {
+  // router.put("/song/:id", async (req, res) => {
   const song = await Song.findOne({ _id: req.params.id });
   Object.assign(song, req.body);
   await song.save();

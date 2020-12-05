@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema({
   avatar: String,
   color: String,
   lastVoted: Date,
+  lastVotedSong: Date,
+  lastVotedArtist: Date,
   lastCommented: Date,
 });
 

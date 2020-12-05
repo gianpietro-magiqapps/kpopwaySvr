@@ -12,6 +12,7 @@ const s3 = new AWS.S3({
 });
 
 router.get("/upload", requireAuth, (req, res) => {
+  // router.get("/upload", (req, res) => {
   let baseDir = req.query.type || "kpopway";
   let fileName = `${uuid()}.jpeg`;
 
@@ -31,6 +32,7 @@ router.get("/upload", requireAuth, (req, res) => {
 });
 
 router.delete("/upload", requireAuth, (req, res) => {
+  // router.delete("/upload", (req, res) => {
   const key = req.query.key;
 
   s3.deleteObject(
