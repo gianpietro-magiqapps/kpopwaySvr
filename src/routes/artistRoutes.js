@@ -36,8 +36,7 @@ const updateTotalVotes = async (artist) => {
 };
 
 const userCanVote = (lastVoted, now, userToken) => {
-  console.log(lastVoted, now);
-  if (keys.adminDeviceIds.split(" ").includes(userToken)) {
+  if (keys.adminDeviceIds.split(" ").includes(userToken) || !lastVoted) {
     return "enabled";
   }
   if (Math.abs(lastVoted - now) <= 900000) {
@@ -115,9 +114,10 @@ router.put("/artist/:id/addVotes", async (req, res) => {
 
     if (user) {
       // can vote?
-      if (
-        userCanVote(user.lastVotedArtist, now, user.userToken) === "enabled"
-      ) {
+      let tempLastVoted = user.lastVotedArtist
+        ? user.lastVotedArtist
+        : user.lastVoted;
+      if (userCanVote(tempLastVoted, now, user.userToken) === "enabled") {
         // can vote, check if new artist
         const artist = await Artist.findOne({ _id: artistId });
 
