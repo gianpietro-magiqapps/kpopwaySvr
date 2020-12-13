@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
   lastVotedSong: Date,
   lastVotedArtist: Date,
   lastCommented: Date,
+  isAdmin: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 mongoose.model("User", userSchema);

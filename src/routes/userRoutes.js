@@ -8,6 +8,11 @@ const Setting = mongoose.model("Setting");
 
 const router = express.Router();
 
+const checkIfDuplicated = async (nickname) => {
+  const duplicatedUser = await User.findOne({ nickname });
+  return duplicatedUser ? true : false;
+};
+
 router.get("/users", async (req, res) => {
   const users = await User.find();
   res.send(users);
@@ -99,9 +104,23 @@ router.put("/user/:id", async (req, res) => {
 
 router.put("/user/deviceId/:deviceId", async (req, res) => {
   const user = await User.findOne({ userToken: req.params.deviceId });
-  Object.assign(user, req.body);
-  await user.save();
-  res.send(user);
+  const newNickname = req.body.nickname.trim();
+  if (user.nickname !== newNickname) {
+    const duplicated = await checkIfDuplicated(newNickname);
+    if (duplicated) {
+      res
+        .status(422)
+        .send({ error: "Nickname duplicated, please choose another one." });
+    } else {
+      Object.assign(user, req.body);
+      await user.save();
+      res.send(user);
+    }
+  } else {
+    Object.assign(user, req.body);
+    await user.save();
+    res.send(user);
+  }
 });
 
 module.exports = router;

@@ -123,4 +123,16 @@ router.delete("/news/:id", requireAuth, async (req, res) => {
   res.send("success");
 });
 
+router.delete("/news/:id/:comment_id", async (req, res) => {
+  await News.findByIdAndUpdate(
+    req.params.id,
+    { $pull: { comments: { _id: req.params.comment_id } } },
+    { safe: true, upsert: true }
+  );
+  const updatedNews = await News.findOne({ _id: req.params.id }).populate(
+    "comments.userId"
+  );
+  res.send(updatedNews);
+});
+
 module.exports = router;
