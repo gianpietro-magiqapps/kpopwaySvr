@@ -124,11 +124,17 @@ router.delete("/news/:id", requireAuth, async (req, res) => {
 });
 
 router.delete("/news/:id/:comment_id", async (req, res) => {
-  await News.findByIdAndUpdate(
-    req.params.id,
-    { $pull: { comments: { _id: req.params.comment_id } } },
-    { safe: true, upsert: true }
-  );
+  const user = await User.findOne({ _id: req.query.userId });
+  if (
+    user.isAdmin ||
+    user._id.toString() === req.query.commentUserId.toString()
+  ) {
+    await News.findByIdAndUpdate(
+      req.params.id,
+      { $pull: { comments: { _id: req.params.comment_id } } },
+      { safe: true, upsert: true }
+    );
+  }
   const updatedNews = await News.findOne({ _id: req.params.id }).populate(
     "comments.userId"
   );

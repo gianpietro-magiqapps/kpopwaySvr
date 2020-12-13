@@ -24,30 +24,33 @@ router.get("/user/:id", async (req, res) => {
 });
 
 router.get("/user/deviceId/:deviceId", async (req, res) => {
-  const user = await User.findOne({ userToken: req.params.deviceId });
+  var user = await User.findOne({ userToken: req.params.deviceId });
   if (!user) {
     // this deviceId has no user associated, create new user
+    user = new User({
+      userToken: req.params.deviceId,
+    });
+  }
+  if (!user.nickname) {
+    // this deviceId has user, but no nickname associated, assign values
     const settings = await Setting.findOne();
     const randomNames = settings.commentsNicknames;
     const randomAvatars = settings.commentsAvatars;
     const randomColors = settings.commentsColors;
+    const randomDigits = Math.floor(10000 + Math.random() * 90000);
     const newNickname =
-      randomNames[Math.floor(Math.random() * randomNames.length)];
+      randomNames[Math.floor(Math.random() * randomNames.length)] +
+      randomDigits;
     const newAvatar =
       randomAvatars[Math.floor(Math.random() * randomAvatars.length)];
     const newColor =
       randomColors[Math.floor(Math.random() * randomColors.length)];
-    const newUser = new User({
-      userToken: req.params.deviceId,
-      nickname: newNickname,
-      avatar: newAvatar,
-      color: newColor,
-    });
-    await newUser.save();
-    res.send(newUser);
-  } else {
-    res.send(user);
+    user.nickname = newNickname;
+    user.avatar = newAvatar;
+    user.color = newColor;
+    await user.save();
   }
+  res.send(user);
 });
 
 router.post("/users", async (req, res) => {
