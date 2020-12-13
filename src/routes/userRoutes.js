@@ -105,6 +105,16 @@ router.put("/user/:id", async (req, res) => {
   res.send(user);
 });
 
+router.put("/user/ban/:id", async (req, res) => {
+  const user = await User.findOne({ _id: req.params.id });
+  const adminUser = await User.findOne({ _id: req.query.adminUserId });
+  if (adminUser.isAdmin) {
+    user.isBanned = req.query.banStatus;
+    await user.save();
+  }
+  res.send(user);
+});
+
 router.put("/user/deviceId/:deviceId", async (req, res) => {
   const user = await User.findOne({ userToken: req.params.deviceId });
   const newNickname = req.body.nickname.trim();

@@ -65,6 +65,11 @@ router.put("/news/:id/comment", async (req, res) => {
       user.color =
         randomColors[Math.floor(Math.random() * randomColors.length)];
     }
+    if (user.isBanned) {
+      return res
+        .status(422)
+        .send({ error: "You have been blocked by the admin." });
+    }
     let newComment = {
       userId: user._id,
       userName: user.nickname,

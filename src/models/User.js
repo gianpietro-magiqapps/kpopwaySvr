@@ -9,6 +9,10 @@ const userSchema = new mongoose.Schema({
   lastVotedSong: Date,
   lastVotedArtist: Date,
   lastCommented: Date,
+  isBanned: {
+    type: Boolean,
+    default: false,
+  },
   isAdmin: {
     type: Boolean,
     default: false,
