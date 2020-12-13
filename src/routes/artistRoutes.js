@@ -116,6 +116,8 @@ router.put("/artist/:id/addVotes", async (req, res) => {
       // can vote?
       let tempLastVoted = user.lastVotedArtist
         ? user.lastVotedArtist
+        : user.lastVotedSong
+        ? "2000-12-13T16:51:32.885+00:00"
         : user.lastVoted;
       if (userCanVote(tempLastVoted, now, user.userToken) === "enabled") {
         // can vote, check if new artist
