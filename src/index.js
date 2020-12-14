@@ -38,9 +38,23 @@ mongoose.connect(keys.mongoURI, {
 mongoose.connection.on("connected", () => {
   console.log("connected to MongoDB");
 });
-mongoose.connection.on("error", (err) =>
-  console.log("Error connecting to mongo", err)
-);
+
+// Retry connection
+const connectWithRetry = () => {
+  console.log("MongoDB connection with retry");
+  return mongoose.connect(keys.mongoURI, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  });
+};
+
+// Exit application on error
+mongoose.connection.on("error", (err) => {
+  console.log(`MongoDB connection error: ${err}`);
+  setTimeout(connectWithRetry, 5000);
+  // process.exit(-1)
+});
 
 app.get("/", (req, res) => {
   res.send("Hi there!");
