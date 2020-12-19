@@ -174,6 +174,12 @@ router.put("/song/:id/addVotes", async (req, res) => {
   }
 });
 
+router.put("/song/addFakeVotes", async (req, res) => {
+  const { token, name } = req.query;
+  console.log("Invalid vote attempt:", token, name);
+  res.send("registered");
+});
+
 router.put("/song/:id", requireAuth, async (req, res) => {
   // router.put("/song/:id", async (req, res) => {
   const song = await Song.findOne({ _id: req.params.id });

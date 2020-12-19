@@ -176,6 +176,12 @@ router.put("/artist/:id/addVotes", async (req, res) => {
   }
 });
 
+router.put("/artist/addFakeVotes", async (req, res) => {
+  const { token, name } = req.query;
+  console.log("Invalid vote attempt:", token, name);
+  res.send("registered");
+});
+
 router.put("/artist/:id/addBroadcastCredits", async (req, res) => {
   const artist = await Artist.findOneAndUpdate(
     { _id: req.params.id },
