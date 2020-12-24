@@ -6,6 +6,7 @@ const requireAuth = require("../middlewares/requireAuth");
 
 const Song = mongoose.model("Song");
 const User = mongoose.model("User");
+const Setting = mongoose.model("Setting");
 
 const router = express.Router();
 
@@ -47,12 +48,13 @@ const userCanVote = (lastVoted, now, userToken) => {
   return "enabled";
 };
 
-const votingDisabled = (now) => {
+const votingDisabled = async (now) => {
   if (
     (now.format("dddd") === "Monday" && now.format("HH") >= 10) ||
     (now.format("dddd") === "Tuesday" && now.format("HH") < 10)
   ) {
-    return true;
+    const settings = await Setting.findOne().lean();
+    return !settings.songsVotingOverride;
   }
   return false;
 };
@@ -100,7 +102,7 @@ router.post("/songs", requireAuth, async (req, res) => {
 
 router.put("/song/:id/addVotes", async (req, res) => {
   const now = moment().utcOffset("+09:00");
-  if (votingDisabled(now)) {
+  if (await votingDisabled(now)) {
     res.status(422).send({
       error: "Voting disabled, restarts on Tuesday 10am KST",
     });

@@ -18,7 +18,8 @@ router.post("/settings", requireAuth, async (req, res) => {
 });
 
 router.put("/settings", requireAuth, async (req, res) => {
-  const settings = await Setting.findOne();
+  // router.put("/settings", async (req, res) => {
+  const settings = await Setting.findOne({});
   Object.assign(settings, req.body);
   await settings.save();
   res.send(settings);
