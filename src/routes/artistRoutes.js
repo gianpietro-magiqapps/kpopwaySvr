@@ -62,13 +62,17 @@ router.get("/artists", async (req, res) => {
   const inRanking = req.query.inRanking || false;
   var artists = [];
   if (inRanking) {
-    artists = await Artist.find({ inRanking: inRanking }).sort({
-      currentPosition: "asc",
-    });
+    artists = await Artist.find({ inRanking: inRanking })
+      .sort({
+        currentPosition: "asc",
+      })
+      .select("-rankingVotes");
   } else if (inRewards) {
-    artists = await Artist.find({ inRewards: inRewards }).sort({
-      broadcastCredits: "desc",
-    });
+    artists = await Artist.find({ inRewards: inRewards })
+      .sort({
+        broadcastCredits: "desc",
+      })
+      .select("-rankingVotes");
   } else {
     artists = await Artist.find().sort({
       name: "asc",

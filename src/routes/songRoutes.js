@@ -63,15 +63,17 @@ router.get("/songs", async (req, res) => {
   const inRanking = req.query.inRanking || false;
   const songs = inRanking
     ? await Song.find({ inRanking: inRanking })
-        .populate("artist")
+        .populate("artist", "-rankingVotes")
         .sort({
           currentPosition: "asc",
         })
+        .select("-rankingVotes")
     : await Song.find()
-        .populate("artist")
+        .populate("artist", "-rankingVotes")
         .sort({
           name: "asc",
-        });
+        })
+        .select("-rankingVotes");
   res.send(songs);
 });
 
