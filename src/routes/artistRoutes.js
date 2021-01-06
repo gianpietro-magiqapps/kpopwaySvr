@@ -68,11 +68,9 @@ router.get("/artists", async (req, res) => {
       })
       .select("-rankingVotes");
   } else if (inRewards) {
-    artists = await Artist.find({ inRewards: inRewards })
-      .sort({
-        broadcastCredits: "desc",
-      })
-      .select("-rankingVotes");
+    artists = await Artist.find({ inRewards: inRewards }).sort({
+      broadcastCredits: "desc",
+    });
   } else {
     artists = await Artist.find().sort({
       name: "asc",

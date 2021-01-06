@@ -72,8 +72,7 @@ router.get("/songs", async (req, res) => {
         .populate("artist", "-rankingVotes")
         .sort({
           name: "asc",
-        })
-        .select("-rankingVotes");
+        });
   res.send(songs);
 });
 
