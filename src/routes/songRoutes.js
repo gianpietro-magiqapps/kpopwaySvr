@@ -1,18 +1,18 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const moment = require("moment");
-const keys = require("../config/keys");
-const requireAuth = require("../middlewares/requireAuth");
+const express = require('express');
+const mongoose = require('mongoose');
+const moment = require('moment');
+const keys = require('../config/keys');
+const requireAuth = require('../middlewares/requireAuth');
 
-const Song = mongoose.model("Song");
-const User = mongoose.model("User");
-const Setting = mongoose.model("Setting");
+const Song = mongoose.model('Song');
+const User = mongoose.model('User');
+const Setting = mongoose.model('Setting');
 
 const router = express.Router();
 
 const updatePositions = async () => {
   let songs = await Song.find({ inRanking: true }).sort({
-    totalVotes: "desc",
+    totalVotes: 'desc',
   });
   var i;
   for (i = 0; i < songs.length; i++) {
@@ -21,9 +21,9 @@ const updatePositions = async () => {
     await rankingSong.save();
   }
   songs = await Song.find({ inRanking: true })
-    .populate("artist")
+    .populate('artist')
     .sort({
-      totalVotes: "desc",
+      totalVotes: 'desc',
     });
   return songs;
 };
@@ -39,19 +39,19 @@ const updateTotalVotes = async (song) => {
 };
 
 const userCanVote = (lastVoted, now, userToken) => {
-  if (keys.adminDeviceIds.split(" ").includes(userToken) || !lastVoted) {
-    return "enabled";
+  if (keys.adminDeviceIds.split(' ').includes(userToken) || !lastVoted) {
+    return 'enabled';
   }
   if (Math.abs(lastVoted - now) <= 900000) {
-    return "paused";
+    return 'paused';
   }
-  return "enabled";
+  return 'enabled';
 };
 
 const votingDisabled = async (now) => {
   if (
-    (now.format("dddd") === "Monday" && now.format("HH") >= 10) ||
-    (now.format("dddd") === "Tuesday" && now.format("HH") < 10)
+    (now.format('dddd') === 'Monday' && now.format('HH') >= 10) ||
+    (now.format('dddd') === 'Tuesday' && now.format('HH') < 10)
   ) {
     const settings = await Setting.findOne().lean();
     return !settings.songsVotingOverride;
@@ -59,33 +59,33 @@ const votingDisabled = async (now) => {
   return false;
 };
 
-router.get("/songs", async (req, res) => {
+router.get('/songs', async (req, res) => {
   const inRanking = req.query.inRanking || false;
   const songs = inRanking
     ? await Song.find({ inRanking: inRanking })
-        .populate("artist", "-rankingVotes")
+        .populate('artist', '-rankingVotes')
         .sort({
-          currentPosition: "asc",
+          currentPosition: 'asc',
         })
-        .select("-rankingVotes")
+        .select('-rankingVotes')
     : await Song.find()
-        .populate("artist", "-rankingVotes")
+        .populate('artist', '-rankingVotes')
         .sort({
-          name: "asc",
+          name: 'asc',
         });
   res.send(songs);
 });
 
-router.get("/song/:id", async (req, res) => {
+router.get('/song/:id', async (req, res) => {
   const song = await Song.findOne({ _id: req.params.id });
   res.send(song);
 });
 
-router.post("/songs", requireAuth, async (req, res) => {
+router.post('/songs', requireAuth, async (req, res) => {
   // router.post("/songs", async (req, res) => {
   const { name } = req.body;
   if (!name) {
-    return res.status(422).send({ error: "You must provide a name" });
+    return res.status(422).send({ error: 'You must provide a name' });
   }
 
   try {
@@ -101,11 +101,11 @@ router.post("/songs", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/song/:id/addVotes", async (req, res) => {
-  const now = moment().utcOffset("+09:00");
+router.put('/song/:id/addVotes', async (req, res) => {
+  const now = moment().utcOffset('+09:00');
   if (await votingDisabled(now)) {
     res.status(422).send({
-      error: "Voting disabled, restarts on Tuesday 10am KST",
+      error: 'Voting disabled, restarts on Tuesday 10am KST',
     });
   } else {
     const { userToken, votes } = req.query;
@@ -118,33 +118,39 @@ router.put("/song/:id/addVotes", async (req, res) => {
       let tempLastVoted = user.lastVotedSong
         ? user.lastVotedSong
         : user.lastVotedArtist
-        ? "2000-12-13T16:51:32.885+00:00"
+        ? '2000-12-13T16:51:32.885+00:00'
         : user.lastVoted;
-      if (userCanVote(tempLastVoted, now, user.userToken) === "enabled") {
-        // can vote, check if new song
-        const song = await Song.findOne({ _id: songId });
+      if (userCanVote(tempLastVoted, now, user.userToken) === 'enabled') {
+        // can vote, check if new artist
+        const song = await Song.findOne({
+          _id: songId,
+        });
+        const songWithVote = await Song.findOne({
+          _id: songId,
+          'rankingVotes.userId': user._id,
+        });
 
-        let voted = false;
-        for (var i = 0; i < song.rankingVotes.length; i++) {
-          if (song.rankingVotes[i].userId.equals(user._id)) {
-            song.rankingVotes[i].votes += parseInt(votes);
-            user.lastVoted = now;
-            user.lastVotedSong = now;
-            await user.save();
-            await song.save();
-            voted = true;
-            break;
-          }
-        }
-
-        if (!voted) {
+        // update or create new vote
+        if (songWithVote) {
+          // update vote count for user
+          await Song.findOneAndUpdate(
+            {
+              _id: songId,
+              rankingVotes: { $elemMatch: { userId: user._id } },
+            },
+            { $inc: { 'rankingVotes.$.votes': 1 } },
+          );
+        } else {
+          // new vote object for user
           const vote = { userId: user._id, votes };
           await song.rankingVotes.push(vote);
-          user.lastVoted = now;
-          user.lastVotedSong = now;
-          await user.save();
           await song.save();
         }
+
+        // update lastVoted
+        user.lastVoted = now;
+        user.lastVotedSong = now;
+        await user.save();
 
         // update Votes
         await updateTotalVotes(song);
@@ -153,7 +159,7 @@ router.put("/song/:id/addVotes", async (req, res) => {
         res.send(rankingSongs);
       } else {
         // can't vote
-        res.status(422).send({ error: "You can vote ONCE every 15 minutes." });
+        res.status(422).send({ error: 'You can vote ONCE every 15 minutes.' });
       }
     } else {
       // create new user
@@ -177,13 +183,13 @@ router.put("/song/:id/addVotes", async (req, res) => {
   }
 });
 
-router.put("/song/addFakeVotes", async (req, res) => {
+router.put('/song/addFakeVotes', async (req, res) => {
   const { token, name } = req.query;
-  console.log("Invalid vote attempt:", token, name);
-  res.send("registered");
+  console.log('Invalid vote attempt:', token, name);
+  res.send('registered');
 });
 
-router.put("/song/:id", requireAuth, async (req, res) => {
+router.put('/song/:id', requireAuth, async (req, res) => {
   // router.put("/song/:id", async (req, res) => {
   const song = await Song.findOne({ _id: req.params.id });
   Object.assign(song, req.body);
@@ -195,15 +201,15 @@ router.put("/song/:id", requireAuth, async (req, res) => {
   res.send(rankingSongs);
 });
 
-router.delete("/songs/votes", requireAuth, async (req, res) => {
+router.delete('/songs/votes', requireAuth, async (req, res) => {
   await Song.updateMany(
     {},
     { $set: { rankingVotes: [], adminVotes: 0, totalVotes: 0 } },
-    { multi: true }
+    { multi: true },
   );
   // Remove all users but admin --> Deprecated to persist comments
   // await User.remove({ _id: { $ne: "5f8c717a94198efbb48a6a7f" } });
-  res.send("success");
+  res.send('success');
 });
 
 module.exports = router;
