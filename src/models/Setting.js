@@ -15,7 +15,6 @@ const settingSchema = new mongoose.Schema({
   fakeDeviceDetection: Boolean,
   songsVotingOverride: Boolean,
   artistsVotingOverride: Boolean,
-  fakeSongs: Array,
 });
 
 mongoose.model("Setting", settingSchema);
