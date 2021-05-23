@@ -1,34 +1,34 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const moment = require("moment");
-const requireAuth = require("../middlewares/requireAuth");
+const express = require('express');
+const mongoose = require('mongoose');
+const moment = require('moment');
+const requireAuth = require('../middlewares/requireAuth');
 
-const News = mongoose.model("News");
-const User = mongoose.model("User");
-const Setting = mongoose.model("Setting");
+const News = mongoose.model('News');
+const User = mongoose.model('User');
+const Setting = mongoose.model('Setting');
 
 const router = express.Router();
 
-router.get("/news", async (req, res) => {
+router.get('/news', async (req, res) => {
   const news = await News.find()
     .sort({
-      date: "desc",
+      date: 'desc',
     })
-    .populate("comments.userId");
+    .populate('comments.userId');
   res.send(news);
 });
 
-router.get("/news/:id", async (req, res) => {
+router.get('/news/:id', async (req, res) => {
   const news = await News.findOne({ _id: req.params.id }).populate(
-    "comments.userId"
+    'comments.userId',
   );
   res.send(news);
 });
 
-router.post("/news", requireAuth, async (req, res) => {
+router.post('/news', requireAuth, async (req, res) => {
   const { title } = req.body;
   if (!title) {
-    return res.status(422).send({ error: "You must provide a title" });
+    return res.status(422).send({ error: 'You must provide a title' });
   }
 
   try {
@@ -42,8 +42,8 @@ router.post("/news", requireAuth, async (req, res) => {
   }
 });
 
-router.put("/news/:id/comment", async (req, res) => {
-  const now = moment().utcOffset("+09:00");
+router.put('/news/:id/comment', async (req, res) => {
+  const now = moment().utcOffset('+09:00');
 
   const { userToken, comment } = req.query;
   const newsId = req.params.id;
@@ -68,7 +68,7 @@ router.put("/news/:id/comment", async (req, res) => {
     if (user.isBanned) {
       return res
         .status(422)
-        .send({ error: "You have been blocked by the admin." });
+        .send({ error: 'You have been blocked by the admin.' });
     }
     let newComment = {
       userId: user._id,
@@ -109,26 +109,29 @@ router.put("/news/:id/comment", async (req, res) => {
     await newUser.save();
     await news.comments.push(newComment);
   }
+  // keep only latest 100
+  news.comments = news.comments.slice(-100);
   await news.save();
+  // respond with new comments
   const updatedNews = await News.findOne({ _id: newsId }).populate(
-    "comments.userId"
+    'comments.userId',
   );
   res.send(updatedNews);
 });
 
-router.put("/news/:id", requireAuth, async (req, res) => {
+router.put('/news/:id', requireAuth, async (req, res) => {
   const news = await News.findOne({ _id: req.params.id });
   Object.assign(news, req.body);
   await news.save();
   res.send(news);
 });
 
-router.delete("/news/:id", requireAuth, async (req, res) => {
+router.delete('/news/:id', requireAuth, async (req, res) => {
   await News.deleteOne({ _id: req.params.id });
-  res.send("success");
+  res.send('success');
 });
 
-router.delete("/news/:id/:comment_id", async (req, res) => {
+router.delete('/news/:id/:comment_id', async (req, res) => {
   const user = await User.findOne({ _id: req.query.userId });
   if (
     user.isAdmin ||
@@ -137,11 +140,11 @@ router.delete("/news/:id/:comment_id", async (req, res) => {
     await News.findByIdAndUpdate(
       req.params.id,
       { $pull: { comments: { _id: req.params.comment_id } } },
-      { safe: true, upsert: true }
+      { safe: true, upsert: true },
     );
   }
   const updatedNews = await News.findOne({ _id: req.params.id }).populate(
-    "comments.userId"
+    'comments.userId',
   );
   res.send(updatedNews);
 });
