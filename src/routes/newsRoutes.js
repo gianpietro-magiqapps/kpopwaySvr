@@ -109,8 +109,8 @@ router.put('/news/:id/comment', async (req, res) => {
     await newUser.save();
     await news.comments.push(newComment);
   }
-  // keep only latest 100
-  news.comments = news.comments.slice(-100);
+  // keep only latest 99
+  news.comments = news.comments.slice(-99);
   await news.save();
   // respond with new comments
   const updatedNews = await News.findOne({ _id: newsId }).populate(
