@@ -111,9 +111,7 @@ router.put('/news/:id/comment', async (req, res) => {
   }
   // keep only latest N comments
   const settings = await Setting.findOne();
-  console.log(settings);
-  console.log(settings.commentsLimit);
-  news.comments = news.comments.slice(-settings.commentsLimit);
+  news.comments = news.comments.slice(-settings.commentsLimit || -350);
   await news.save();
   // respond with new comments
   const updatedNews = await News.findOne({ _id: newsId }).populate(
