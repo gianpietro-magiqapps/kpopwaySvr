@@ -45,8 +45,6 @@ router.post('/news', requireAuth, async (req, res) => {
 router.put('/news/:id/comment', async (req, res) => {
   const now = moment().utcOffset('+09:00');
 
-  const settings = await Setting.findOne();
-
   const { userToken, comment } = req.query;
   const newsId = req.params.id;
   const user = await User.findOne({ userToken });
@@ -56,6 +54,7 @@ router.put('/news/:id/comment', async (req, res) => {
     // user exists, commenting
     // check if it needs a default nick, avatar and color first
     if (!user.nickname) {
+      const settings = await Setting.findOne();
       const randomNames = settings.commentsNicknames;
       const randomAvatars = settings.commentsAvatars;
       const randomColors = settings.commentsColors;
@@ -82,6 +81,7 @@ router.put('/news/:id/comment', async (req, res) => {
     await news.comments.push(newComment);
   } else {
     // create new user
+    const settings = await Setting.findOne();
     const randomNames = settings.commentsNicknames;
     const randomAvatars = settings.commentsAvatars;
     const randomColors = settings.commentsColors;
@@ -110,8 +110,8 @@ router.put('/news/:id/comment', async (req, res) => {
     await news.comments.push(newComment);
   }
   // keep only latest N comments
-  console.log(settings.commentsLimit)
-  news.comments = news.comments.slice(-(settings.commentsLimit));
+  const settings = await Setting.findOne();
+  news.comments = news.comments.slice(-settings.commentsLimit);
   await news.save();
   // respond with new comments
   const updatedNews = await News.findOne({ _id: newsId }).populate(
