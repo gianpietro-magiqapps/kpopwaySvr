@@ -10,10 +10,13 @@ const Setting = mongoose.model('Setting');
 const router = express.Router();
 
 router.get('/news', async (req, res) => {
+  const commentLimit = req.query.commentLimit || 999;
+
   const news = await News.find()
     .sort({
       date: 'desc',
     })
+    .slice('comments', -commentLimit)
     .populate('comments.userId');
   res.send(news);
 });

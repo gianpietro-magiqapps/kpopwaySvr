@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const settingSchema = new mongoose.Schema({
   rewardCredits: String,
@@ -15,6 +15,9 @@ const settingSchema = new mongoose.Schema({
   fakeDeviceDetection: Boolean,
   songsVotingOverride: Boolean,
   artistsVotingOverride: Boolean,
+  commentsLimit: Number,
+  initialComments: Number,
+  loadComments: Number,
 });
 
-mongoose.model("Setting", settingSchema);
+mongoose.model('Setting', settingSchema);
